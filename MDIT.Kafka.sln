@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDIT.Kafka.CLI", "MDIT.Kafka.CLI\MDIT.Kafka.CLI.csproj", "{3BB42F9E-DBD4-414A-B415-9B4D79C783B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDIT.Kafka.Producers", "MDIT.Kafka.Producers\MDIT.Kafka.Producers.csproj", "{05909173-1016-494B-BA3C-369996CCC814}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{98CF42A4-4E38-4102-AD0E-767813EFA78F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDIT.Microsoft.Abstractions", "MDIT.Microsoft.Abstractions\MDIT.Microsoft.Abstractions.csproj", "{E591DB2A-38F0-4993-8087-B8FEAE0CB254}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3BB42F9E-DBD4-414A-B415-9B4D79C783B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BB42F9E-DBD4-414A-B415-9B4D79C783B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BB42F9E-DBD4-414A-B415-9B4D79C783B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BB42F9E-DBD4-414A-B415-9B4D79C783B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05909173-1016-494B-BA3C-369996CCC814}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05909173-1016-494B-BA3C-369996CCC814}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05909173-1016-494B-BA3C-369996CCC814}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05909173-1016-494B-BA3C-369996CCC814}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E591DB2A-38F0-4993-8087-B8FEAE0CB254}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E591DB2A-38F0-4993-8087-B8FEAE0CB254}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E591DB2A-38F0-4993-8087-B8FEAE0CB254}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E591DB2A-38F0-4993-8087-B8FEAE0CB254}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
