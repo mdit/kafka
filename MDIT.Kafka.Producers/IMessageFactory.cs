@@ -4,7 +4,7 @@ namespace MDIT.Kafka.Producers
 {
     public interface IMessageFactory<TKey>
     {
-        Message<TKey, IMessage<TKey>> Create(
+        Message<TKey, Message> Create(
             TKey key,
             Timestamp? timestamp = null,
             Headers headers = null);

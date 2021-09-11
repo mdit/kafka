@@ -2,12 +2,12 @@
 {
     public class IntMessageFactory : MessageFactory<int>
     {
-        protected override IMessage<int> CreateCore(int key)
+        protected override Message<int> CreateCore(int key)
         {
             return new IntMessage(key);
         }
 
-        private class IntMessage : IMessage<int>
+        private class IntMessage : Message<int>
         {
             public IntMessage(int key)
             {

@@ -48,8 +48,8 @@ IServiceCollection CreateServices(IConfiguration configuration)
                                   .AddOptions()
                                   .Configure<ProducerConfig>(options => ConfigureProducerConfig(configuration, options))
                                   .Configure<AvroSerializerConfig>(options => ConfigureAvroSerializerConfig(configuration, options))
-                                  .AddAvroClient()
-                                  .AddMessageSerializers()
+                                //  .AddAvroClient()
+                                  //.AddMessageSerializers()
                                   .AddMessageProducer();
 }
 

@@ -3,21 +3,21 @@ using Confluent.Kafka;
 
 namespace MDIT.Kafka.Producers
 {
-    public interface IMessageSerializer<TKey> : ISerializer<IMessage<TKey>>
+    public interface IMessageSerializer<TKey> : ISerializer<Message<TKey>>
     {
     }
 
-    public class MessageSerializer<TKey> : ISerializer<>
+    public class MessageSerializer<TKey> : IMessageSerializer<TKey>
     {
-        public byte[] Serialize(IMessage<TKey> data, SerializationContext context)
+        public byte[] Serialize(Message<TKey> data, SerializationContext context)
         {
             return new byte[8];
         }
     }
 
-    public class MessageDeserializer<TKey> : IDeserializer<IMessage<TKey>>
+    public class MessageDeserializer<TKey> : IDeserializer<Message<TKey>>
     {
-        public IMessage<TKey> Deserialize(ReadOnlySpan<byte> data, bool isNull, SerializationContext context)
+        public Message<TKey> Deserialize(ReadOnlySpan<byte> data, bool isNull, SerializationContext context)
         {
             throw new NotImplementedException();
         }

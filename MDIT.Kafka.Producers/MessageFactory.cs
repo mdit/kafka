@@ -4,10 +4,10 @@ namespace MDIT.Kafka.Producers
 {
     public abstract class MessageFactory<TKey> : IMessageFactory<TKey>
     {
-        public Message<TKey, IMessage<TKey>> Create(TKey key, Timestamp? timestamp = null, Headers headers = null)
+        public Message<TKey, Message> Create(TKey key, Timestamp? timestamp = null, Headers headers = null)
         {
             var message = CreateCore(key);
-            return new Message<TKey, IMessage<TKey>> {
+            return new Message<TKey, Message> {
                 Key = key,
                 Value = message,
                 Timestamp = timestamp ?? Timestamp.Default,
@@ -15,6 +15,6 @@ namespace MDIT.Kafka.Producers
             };
         }
 
-        protected abstract IMessage<TKey> CreateCore(TKey key);
+        protected abstract Message<TKey> CreateCore(TKey key);
     }
 }

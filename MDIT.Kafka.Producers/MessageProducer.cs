@@ -15,13 +15,13 @@ namespace MDIT.Kafka.Producers
         private readonly IKeyFactory<TKey> _keyFactory;
         private readonly IMessageFactory<TKey> _messageFactory;
         private readonly ILogger<MessageProducer<TKey>> _logger;
-        private readonly IProducer<TKey, Message<TKey>> _producer;
+        private readonly IProducer<TKey, Message> _producer;
 
         public MessageProducer(
             ILogger<MessageProducer<TKey>> logger,
             IKeyFactory<TKey> keyFactory,
             IMessageFactory<TKey> messageFactory,
-            IAsyncSerializer<Message<TKey>> serializer,
+            IAsyncSerializer<Message> serializer,
             IOptions<ProducerConfig> producerConfigAccessor)
         {
             _logger = logger;
@@ -29,14 +29,14 @@ namespace MDIT.Kafka.Producers
             _messageFactory = messageFactory;
 
             var producerConfig = producerConfigAccessor.Value;
-            
+
             var settings = string.Join(Environment.NewLine, producerConfig.Select(x => $"{x.Key}: {x.Value}"));
             _logger.LogInformation($"{settings}");
-            var producerBuilder = new ProducerBuilder<TKey, Message<TKey>>(producerConfig);
+            var producerBuilder = new ProducerBuilder<TKey, Message>(producerConfig);
             producerBuilder.SetValueSerializer(serializer);
             _producer = producerBuilder.Build();
         }
-        
+
         public async Task Produce(string topic, int messageCount, CancellationToken cancellationToken)
         {
             var i = 0;
@@ -48,10 +48,10 @@ namespace MDIT.Kafka.Producers
                     var deliveryResult =
                         await _producer.ProduceAsync(topic, message, cancellationToken)
                                        .ConfigureAwait(false);
-                    
+
                     _logger.LogDebug("Message delivered {message}", deliveryResult.Message);
                 }
-                catch (ProduceException<TKey, IMessage<TKey>> exception)
+                catch (ProduceException<TKey, Message<TKey>> exception)
                 {
                     _logger.LogError("Could not deliver message {message}", exception.Message);
                 }
