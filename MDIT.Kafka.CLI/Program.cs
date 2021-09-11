@@ -1,36 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Threading;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Confluent.Kafka;
 using Confluent.SchemaRegistry.Serdes;
-using MDIT.Kafka.Producers;
+using MDIT.Kafka.CLI.Commands;
+using MDIT.Kafka.CLI.Options;
+using MDIT.Kafka.CLI.Support;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 try
 {
-    var mode = new SelectionPrompt<string>().AddChoices("Producer", "Consumer").Show(AnsiConsole.Console);
-    var topic = AnsiConsole.Ask<string>("Topic", "test-topic");
-    var messageCount = AnsiConsole.Ask<int>("Message count", 10);
-
-    var services = CreateServices(GetConfiguration()).BuildServiceProvider();
-
-    switch (mode)
-    {
-        case "Producer":
-        {
-            using var producer = services.GetService<MessageProducer<int>>();
-            await producer.Produce(topic, messageCount, CancellationToken.None);
-            break;
-        }
-        case "Consumer":
-            // services.GetService<ExampleMessageConsumer>()
-            //         .Run(args);
-            break;
-    }
+    var registrar = GetTypeRegistrar();
+    var app = new CommandApp(registrar);
+    app.Configure(ConfigureCommands);
+    await app.RunAsync(args);
 }
 catch (Exception exception)
 {
@@ -38,58 +29,53 @@ catch (Exception exception)
 }
 finally
 {
-    System.Console.ReadLine();
+    Console.ReadLine();
 }
 
+static ITypeRegistrar GetTypeRegistrar()
+{
+    var configuration = GetConfiguration();
+    var serviceCollection = CreateServices(configuration);
+    var containerBuilder = CreateContainerBuilder(serviceCollection);
+    return new AutoFacRegistrar(containerBuilder);
+}
 
-IServiceCollection CreateServices(IConfiguration configuration)
+static IServiceCollection CreateServices(IConfiguration configuration)
 {
     return new ServiceCollection().AddLogging(builder => builder.AddConsole())
                                   .AddOptions()
-                                  .Configure<ProducerConfig>(options => ConfigureProducerConfig(configuration, options))
-                                  .Configure<AvroSerializerConfig>(options => ConfigureAvroSerializerConfig(configuration, options))
-                                //  .AddAvroClient()
-                                  //.AddMessageSerializers()
-                                  .AddMessageProducer();
+                                  .ConfigureOptions<ConfigureProducerConfig>()
+                                  .Configure<ProducerConfig>(configuration.GetSection(nameof(ProducerConfig)))
+                                  .Configure<AvroSerializerConfig>(configuration.GetSection(nameof(AvroSerializerConfig)));
 }
 
-void ConfigureProducerConfig(IConfiguration config, ProducerConfig producerConfig)
-{
-    config.GetSection(nameof(ProducerConfig)).Bind(producerConfig);
-
-    producerConfig.SslCaLocation = GetSslCertificateLocation();
-}
-
-void ConfigureAvroSerializerConfig(IConfiguration config, AvroSerializerConfig avroSerializerConfig)
-{
-    config.GetSection(nameof(AvroSerializerConfig)).Bind(avroSerializerConfig);
-}
-
-ProducerConfig GetConfig()
-{
-    return new ProducerConfig
-    {
-        BootstrapServers = "pkc-41mxj.uksouth.azure.confluent.cloud:9092",
-        SecurityProtocol = SecurityProtocol.SaslSsl,
-        SaslMechanism = SaslMechanism.Plain,
-        SaslUsername = "CYL5OUWVPVJYMNZB",
-        SaslPassword = "S6IUekNIG7UqB5/ppRwTmviKCzLfUrWL/0T979SEgb4jh0LQDeTGTqByHMDwe4tr",
-       // SslCaLocation = GetSslCertificateLocation()
-    };
-}
-
-string GetSslCertificateLocation()
-{
-    return Path.Combine(
-        Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-        "Certificates",
-        "cacert.pem");
-}
-
-IConfiguration GetConfiguration()
+static IConfiguration GetConfiguration()
 {
     return new ConfigurationBuilder()
-           .SetBasePath(Directory.GetCurrentDirectory())
+           .SetBasePath(Environment.CurrentDirectory)
            .AddJsonFile("appsettings.json", optional: false)
            .Build();
+}
+
+static ContainerBuilder CreateContainerBuilder(IServiceCollection services)
+{
+    var builder = new ContainerBuilder();
+    builder.Populate(services);
+
+    var assemblies = GetAssemblies("MDIT*.dll").ToArray();
+    builder.RegisterAssemblyModules(assemblies);
+    return builder;
+}
+
+static IEnumerable<Assembly> GetAssemblies(string pattern)
+{
+    foreach (var file in Directory.EnumerateFiles(Environment.CurrentDirectory, pattern).OrderBy(x => x))
+    {
+        yield return Assembly.LoadFrom(file);
+    }
+}
+
+static void ConfigureCommands(IConfigurator configurator)
+{
+    ProducerCommand.Register(configurator);
 }

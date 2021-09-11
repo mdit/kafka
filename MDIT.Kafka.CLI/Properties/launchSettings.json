@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MDIT.Kafka.CLI": {
+      "commandName": "Project",
+      "commandLineArgs": "produce -t test-topic -c 10"
+    }
+  }
+}
